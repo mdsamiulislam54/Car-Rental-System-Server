@@ -1,75 +1,115 @@
 [
   {
-
-    "carModel": "Toyota Axio",
+    "carModel": "Toyota Axio 2018",
     "dailyRentalPrice": 3500,
     "availability": "Available",
-    "registrationNumber": "DHK-1234",
-    "features": ["AC", "GPS", "Auto Transmission"],
-    "description": "The Toyota Axio is a fuel-efficient, compact sedan designed for both city commutes and long drives. With a spacious interior and modern features, it ensures a smooth and comfortable ride every time.",
+    "registrationNumber": "DHA-987654",
+    "features": ["AC", "Power Steering", "Airbags"],
+    "description": "A stylish and fuel-efficient sedan perfect for city rides, offering excellent mileage and smooth driving experience with top-notch safety features.",
     "bookingCount": 0,
-    "imageUrl": "https://i.postimg.cc/Bbsr5vWm/avdjlxno5-ezgif-com-webp-to-jpg-converter-removebg-preview.png",
+   
+    "imageUrl": "https://img.freepik.com/free-psd/white-isolated-car_23-2151852876.jpg?t=st=1751378132~exp=1751381732~hmac=4ce30948cc38bcba4fc4855aff7e4272d87e28f173fbb111cfa1e53810b0ff7b&w=1380",
     "location": "Dhaka"
   },
   {
-  
-    "carModel": "Honda CR-V White",
-    "dailyRentalPrice": 4000,
+    "carModel": "Honda Vezel 2019",
+    "dailyRentalPrice": 4800,
     "availability": "Available",
-    "registrationNumber": "CTG-5678",
-    "features": ["AC", "Airbags", "Bluetooth Audio"],
-    "description": "Honda Grace offers a blend of elegance and performance. Its modern design, comfortable cabin, and advanced safety features make it an excellent choice for both business and leisure travel.",
+    "registrationNumber": "CTG-654321",
+    "features": ["Hybrid", "Cruise Control", "Rear Camera"],
+    "description": "A sleek and modern compact SUV with a hybrid engine, advanced technology, and premium interior for a comfortable and eco-friendly journey.",
     "bookingCount": 0,
-    "imageUrl": "https://i.postimg.cc/mrm1WPjH/aa834zzbv-ezgif-com-webp-to-jpg-converter-removebg-preview.png",
+    "imageUrl": "https://img.freepik.com/free-psd/black-isolated-car_23-2151852894.jpg?uid=R160180879&ga=GA1.1.957569816.1750953732&semt=ais_items_boosted&w=740",
     "location": "Chattogram"
   },
   {
-
-    "carModel": "Hyundai Tucson Red",
-    "dailyRentalPrice": 7000,
+    "carModel": "Toyota Premio 2017",
+    "dailyRentalPrice": 4200,
     "availability": "Available",
-    "registrationNumber": "SYL-9090",
-    "features": ["AC", "Sunroof", "GPS"],
-    "description": "Hyundai Tucson is a premium SUV combining sleek design with robust performance. Ideal for family vacations or adventure trips, it offers ample space, modern features, and excellent fuel economy.",
+    "registrationNumber": "SYL-123789",
+    "features": ["AC", "Alloy Wheels", "Push Start"],
+    "description": "Known for its durability and smooth performance, this premium sedan is ideal for both family use and business travel with a luxurious feel.",
     "bookingCount": 0,
-    "imageUrl": "https://i.postimg.cc/g2n0QGjM/kisspng-2018-hyundai-tucson-car-jeep-compass-lowest-price-5b201dfc6d0179-0241154815288314844465-ezgi.png",
+    "imageUrl": "https://img.freepik.com/free-psd/white-isolated-car_23-2151852918.jpg?uid=R160180879&ga=GA1.1.957569816.1750953732&semt=ais_items_boosted&w=740",
     "location": "Sylhet"
   },
   {
-
-    "carModel": "Nissan X-Trail",
-    "dailyRentalPrice": 6800,
+    "carModel": "Nissan X-Trail 2016",
+    "dailyRentalPrice": 5000,
     "availability": "Available",
-    "registrationNumber": "DHK-7777",
-    "features": ["4WD", "AC", "Reverse Camera"],
-    "description": "Nissan X-Trail is a rugged yet stylish SUV equipped for city streets and off-road adventures alike. With modern tech and safety features, it ensures a secure and comfortable journey.",
+    "registrationNumber": "DHA-564738",
+    "features": ["4WD", "Sunroof", "Dual AC"],
+    "description": "An adventurous mid-size SUV built for long tours and off-road adventures, equipped with modern safety tech and spacious seating for the entire family.",
     "bookingCount": 0,
-    "imageUrl": "https://i.postimg.cc/G2Qr9f98/kisspng-nissan-x-trail-daewoo-lemans-compact-car-compact-s-2011-nissan-quest-5b1dbd474cb124-09630789.png",
-    "location": "Dhaka"
+      "imageUrl": "https://img.freepik.com/free-vector/white-hatchback-car-isolated-white-vector_53876-64418.jpg?t=st=1751378404~exp=1751382004~hmac=07db3f8b19c9053e1d53ba6e823934ac4e7c8cfee43ee92d9b274925f0222410&w=1380",
+  
+    "location": "Cox's Bazar"
   },
   {
-
-    "carModel": "Sliver Toyota Sedan",
-    "dailyRentalPrice": 4500,
+    "carModel": "Toyota Noah 2015",
+    "dailyRentalPrice": 4000,
     "availability": "Available",
-    "registrationNumber": "KHU-4321",
-    "features": ["AC", "Airbags", "Bluetooth"],
-    "description": "Sliver Toyota Sedan offers refined luxury in a compact sedan form. Known for its reliability and comfort, this car ensures an enjoyable and hassle-free ride for both short and long distances.",
+    "registrationNumber": "KHL-918273",
+    "features": ["7-Seater", "Power Door", "Rear AC"],
+    "description": "A versatile family van offering ample space and comfort for group tours, with easy access sliding doors and strong air conditioning for summer rides.",
     "bookingCount": 0,
-    "imageUrl": "https://i.postimg.cc/7YC8yh1T/kisspng-2018-toyota-corolla-compact-car-2012-toyota-coroll-2012-toyota-corolla-s-5b292012941f90-1608.png",
+    "imageUrl": "https://img.freepik.com/free-psd/white-isolated-car_23-2151852888.jpg?uid=R160180879&ga=GA1.1.957569816.1750953732&semt=ais_items_boosted&w=740",
     "location": "Khulna"
   },
   {
+    "carModel": "Honda Grace 2018",
+    "dailyRentalPrice": 3700,
+    "availability": "Available",
+    "registrationNumber": "DHA-637281",
+    "features": ["Hybrid", "ABS", "Push Start"],
+    "description": "Compact yet elegant, this hybrid sedan ensures smooth performance, eco-friendly fuel consumption and a range of modern features for a safe and enjoyable drive.",
+    "bookingCount": 0,
+        "imageUrl": "https://img.freepik.com/free-psd/view-crossroad-car_23-2151780809.jpg?t=st=1751378533~exp=1751382133~hmac=7fe96f8421cd755857cd957aa213bc8b9949ee2029820bca7826ed10d7392b9a&w=1380",
   
-    "carModel": "Orange Honda Compact",
+    "location": "Dhaka"
+  },
+  {
+    "carModel": "Toyota Corolla Fielder 2016",
+    "dailyRentalPrice": 3600,
+    "availability": "Available",
+    "registrationNumber": "BAR-829174",
+    "features": ["Roof Rail", "AC", "Rear Wiper"],
+    "description": "A fuel-efficient and reliable station wagon perfect for both family and cargo-friendly rides, offering generous luggage capacity and a sturdy suspension.",
+    "bookingCount": 0,
+    "imageUrl": "https://img.freepik.com/free-psd/white-isolated-car_23-2151852918.jpg?t=st=1751378308~exp=1751381908~hmac=016e3fe0a5588ddb6d459b35aded6fc73fcf7e51988e77590228ea4c9c79ae72&w=1380",
+    "location": "Barisal"
+  },
+  {
+    "carModel": "Suzuki Wagon R 2017",
+    "dailyRentalPrice": 3000,
+    "availability": "Available",
+    "registrationNumber": "CTG-543219",
+    "features": ["Compact", "AC", "Power Steering"],
+    "description": "A practical, compact city car known for excellent fuel economy and ease of maneuvering through traffic, perfect for daily urban commutes and light travel.",
+    "bookingCount": 0,
+     "imageUrl": "https://img.freepik.com/premium-psd/three-dimensional-image-car_53876-1720.jpg?w=1380",
+    "location": "Chattogram"
+  },
+  {
+    "carModel": "Toyota Harrier 2015",
     "dailyRentalPrice": 5500,
     "availability": "Available",
-    "registrationNumber": "CTG-2222",
-    "features": ["Hybrid", "Sunroof", "Cruise Control"],
-    "description": "Orange Honda Compact is a popular hybrid crossover known for its style, fuel economy, and smooth performance. With advanced features and a spacious interior, it is a perfect pick for modern drivers.",
+    "registrationNumber": "DHA-321546",
+    "features": ["Sunroof", "Leather Seats", "Cruise Control"],
+    "description": "A luxury crossover SUV delivering top-tier comfort, advanced safety systems and a powerful engine for long trips with a touch of elegance.",
     "bookingCount": 0,
-    "imageUrl": "https://i.postimg.cc/5tKTGMHm/kisspng-2019-honda-fit-car-honda-city-2018-honda-fit-sport-continuously-variable-transmission-5b162e.png",
-    "location": "Chattogram"
+    "imageUrl": "https://img.freepik.com/premium-photo/side-view-black-minivan-3d_53876-1005074.jpg",
+    "location": "Dhaka"
+  },
+  {
+    "carModel": "Mitsubishi Pajero Sport 2020",
+    "dailyRentalPrice": 7500,
+    "availability": "Available",
+    "registrationNumber": "SYL-192837",
+    "features": ["4WD", "7-Seater", "Sunroof"],
+    "description": "A bold and rugged full-size SUV equipped for any terrain, offering a powerful performance, spacious cabin, and modern infotainment for adventure seekers.",
+    "bookingCount": 0,
+  "imageUrl": "https://img.freepik.com/premium-photo/white-minivan-family-city-car-premium-business-car-3d-illustration_101266-22092.jpg?w=1380",
+    "location": "Sylhet"
   }
-
 ]

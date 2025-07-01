@@ -1,19 +1,16 @@
 import BookingModel from "../schema/carSchemaModel/BookingModel.js";
 import { CarModel } from "../schema/carSchemaModel/carSchemaModel.js";
 import dotenv from "dotenv";
-dotenv.config()
+dotenv.config();
 
 import admin from "firebase-admin";
 
-
-
-
 admin.initializeApp({
   credential: admin.credential.cert({
-    type: 'service_account',
-    project_id: process.env.FB_PROJECT_ID, 
+    type: "service_account",
+    project_id: process.env.FB_PROJECT_ID,
     private_key_id: process.env.FB_PRIVATE_KEY_ID,
-    private_key: process.env.FB_PRIVATE_KEY.replace(/\\n/g, '\n'),
+    private_key: process.env.FB_PRIVATE_KEY.replace(/\\n/g, "\n"),
     client_email: process.env.FB_CLIENT_EMAIL,
     client_id: process.env.FB_CLIENT_ID,
     auth_uri: process.env.FB_AUTH_URI,
@@ -23,7 +20,6 @@ admin.initializeApp({
     universe_domain: process.env.FB_UNIVERSE_DOMAIN,
   }),
 });
-
 
 export const car = async (req, res) => {
   try {
@@ -55,7 +51,11 @@ export const getCars = async (req, res) => {
 };
 
 export const availableCars = async (req, res) => {
-  const { search, sort } = req.query;
+  const { search, sort, limit = 6, page = 0 } = req.query;
+
+  const parsedLimit = parseInt(limit);
+  const parsedPage = parseInt(page);
+
   const query = {
     availability: "Available",
   };
@@ -68,15 +68,27 @@ export const availableCars = async (req, res) => {
     ];
   }
 
-  let result = CarModel.find(query).lean();
+  const skip = (parsedPage - 1) * parsedLimit;
+
+  let result = CarModel.find(query).lean().skip(skip).limit(parsedLimit);
+
   if (sort === "asc") {
     result = result.sort({ dailyRentalPrice: 1 });
   } else if (sort === "desc") {
     result = result.sort({ dailyRentalPrice: -1 });
   }
-  const cars = await result;
-  res.send(cars);
+
+  const [cars, count] = await Promise.all([
+    result,
+    CarModel.countDocuments(query)
+  ]);
+
+  res.send({
+    cars,
+    count
+  });
 };
+
 
 export const myCars = async (req, res) => {
   const uid = req.query.uid;
@@ -150,21 +162,8 @@ export const cancelBooking = async (req, res) => {
   const id = req.params.id;
 
   const query = { _id: id };
-  const updatedDoc = {
-    $set: { bookingStatus: "Canceled" },
-  };
-  const car = await BookingModel.findOne(query);
-  const { carId } = car;
-  const bookingCountData = await CarModel.findOne({ _id: carId });
-  const { bookingCount } = bookingCountData;
-  if (bookingCount > 0) {
-    await CarModel.updateOne({ _id: carId }, { $inc: { bookingCount: -1 } });
-  }
-  if (car.bookingStatus === "Canceled") {
-    return res.status(400).send({ message: "Booking is already canceled" });
-  }
-
-  const result = await BookingModel.updateOne(query, updatedDoc);
+  console.log(id);
+  const result = await BookingModel.deleteOne(query);
   res.send(result);
 };
 

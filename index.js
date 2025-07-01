@@ -54,9 +54,9 @@ app.get("/car-details/:id", carDetails);
 app.get("/booking-car", verifyFirebaseToken, getBooking);
 
 app.patch("/update-car/:id", updateCar);
-app.patch("/cancel-booking/:id", cancelBooking);
 app.patch("/update-booking/:id", updateDate);
 
+app.delete("/cancel-booking/:id", cancelBooking);
 app.delete("/my-cars/:id", deleteCar);
 
 // Run server
