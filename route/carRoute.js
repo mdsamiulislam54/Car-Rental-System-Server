@@ -24,15 +24,17 @@ admin.initializeApp({
 export const car = async (req, res) => {
   try {
     const data = req.body;
+    console.log(data)
     const email = req.query.email;
     if (email !== req.email) {
       return res.status(403).send({ message: "Forbidden access" });
     }
-    console.log(data);
-    const result = await CarModel.insertOne(data);
+    
+    const result = await CarModel.insertOne(data)
     console.log(result);
     res.status(201).send(result);
   } catch (error) {
+    console.log(error)
     res.status(500).send({ message: "Something went wrong", error });
   }
 };
@@ -102,14 +104,14 @@ export const availableCars = async (req, res) => {
 export const myCars = async (req, res) => {
   const uid = req.query.uid;
   const email = req.query.email;
-
+  console.log(uid, email)
   if (email !== req.email) {
     return res.status(403).send({ message: "Forbidden access" });
   }
 
   const sort = req.query.sort;
 
-  let result = CarModel.find({ uid: uid });
+  let result = CarModel.find({ ownerId: uid });
   if (sort === "asc") {
     result = result.sort({ createdAt: -1 });
   } else if (sort === "desc") {
@@ -262,7 +264,7 @@ export const getCarType = async (req, res) => {
   try {
     const carTypes = await CarModel.distinct("carModel");
     const location = await CarModel.distinct("location");
-    console.log(location)
+    
     res.send({ carTypes, location })
   } catch (error) {
     res.status(404).json({ message: "Data not found" });

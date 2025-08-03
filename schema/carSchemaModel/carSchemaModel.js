@@ -20,13 +20,12 @@ const carSchema = new mongoose.Schema(
     },
     availability: {
       type: String,
-      enum: ["Available", "Booked", "Maintenance"],
       default: "Available",
     },
     registrationNumber: {
       type: String,
       required: true,
-      unique: true,
+     
     },
     fuelType: {
       type: String,
@@ -71,11 +70,11 @@ const carSchema = new mongoose.Schema(
       default: [],
     },
     location: {
-      type: String,
+      type: Object,
       required: true,
     },
     ownerId: {
-      type: String, // user UID if from Firebase or ObjectId if local user
+      type: String, 
       required: false,
     },
   },
