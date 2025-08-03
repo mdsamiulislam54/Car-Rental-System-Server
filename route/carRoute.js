@@ -51,7 +51,7 @@ export const getCars = async (req, res) => {
 };
 
 export const availableCars = async (req, res) => {
-  const { search, sort, limit = 6, page = 0 } = req.query;
+  const { search, sort, limit = 6, page = 0, carModel, location } = req.query;
 
   const parsedLimit = parseInt(limit);
   const parsedPage = parseInt(page);
@@ -59,6 +59,15 @@ export const availableCars = async (req, res) => {
   const query = {
     availability: "Available",
   };
+
+  if (carModel) {
+    query.carModel = carModel;
+  }
+
+
+  if (location) {
+    query.location = location;
+  }
 
   if (search) {
     query.$or = [
@@ -248,3 +257,15 @@ export const verifyFirebaseToken = async (req, res, next) => {
     return res.status(401).send({ message: "Unauthorized" });
   }
 };
+
+export const getCarType = async (req, res) => {
+  try {
+    const carTypes = await CarModel.distinct("carModel");
+    const location = await CarModel.distinct("location");
+    console.log(location)
+    res.send({ carTypes, location })
+  } catch (error) {
+    res.status(404).json({ message: "Data not found" });
+  }
+};
+

@@ -12,6 +12,7 @@ import {
   deleteCar,
   getBooking,
   getCars,
+  getCarType,
   // jwtTokenGenerate,
   myCars,
   updateCar,
@@ -52,6 +53,7 @@ app.get("/available-cars", availableCars);
 app.get("/my-cars", verifyFirebaseToken, myCars);
 app.get("/car-details/:id", carDetails);
 app.get("/booking-car", verifyFirebaseToken, getBooking);
+app.get('/car-type',getCarType)
 
 app.patch("/update-car/:id", updateCar);
 app.patch("/update-booking/:id", updateDate);
