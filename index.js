@@ -9,10 +9,12 @@ import {
   car,
   carBooking,
   carDetails,
+  createUser,
   deleteCar,
   getBooking,
   getCars,
   getCarType,
+  getUser,
   // jwtTokenGenerate,
   myCars,
   updateCar,
@@ -46,6 +48,8 @@ mongoose
 
 app.post("/car",verifyFirebaseToken, car);
 app.post("/booking-car", carBooking);
+//user
+app.post('/user', createUser)
 // app.post("/jwt", jwtTokenGenerate);
 
 app.get("/car", getCars);
@@ -54,6 +58,8 @@ app.get("/my-cars", verifyFirebaseToken, myCars);
 app.get("/car-details/:id", carDetails);
 app.get("/booking-car", verifyFirebaseToken, getBooking);
 app.get('/car-type',getCarType)
+//user
+app.get('/user', getUser)
 
 app.patch("/update-car/:id", updateCar);
 app.patch("/update-booking/:id", updateDate);

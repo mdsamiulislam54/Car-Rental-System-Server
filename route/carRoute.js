@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import admin from "firebase-admin";
+import { UserModel } from "../schema/userModel/userModel.js";
 
 admin.initializeApp({
   credential: admin.credential.cert({
@@ -29,7 +30,7 @@ export const car = async (req, res) => {
     if (email !== req.email) {
       return res.status(403).send({ message: "Forbidden access" });
     }
-    
+
     const result = await CarModel.insertOne(data)
     console.log(result);
     res.status(201).send(result);
@@ -62,13 +63,13 @@ export const availableCars = async (req, res) => {
       carModels,
       locations
     } = req.query;
-    console.log(locations,carModels)
+    console.log(locations, carModels)
     const parsedLimit = parseInt(limit);
     const parsedPage = parseInt(page);
     const skip = (parsedPage - 1) * parsedLimit;
 
     // 🔍 Build MongoDB query
-    const query = { };
+    const query = {};
 
     if (carModels) {
       query.carModel = carModels;
@@ -103,7 +104,7 @@ export const availableCars = async (req, res) => {
     }
 
     // 🚀 Fetch cars and total count in parallel
-    const [cars, total] = await Promise.all([
+    const [cars, count] = await Promise.all([
       carQuery.exec(),
       CarModel.countDocuments(query)
     ]);
@@ -111,10 +112,10 @@ export const availableCars = async (req, res) => {
     // 📤 Response
     res.send({
       cars,
-      total,
-      
+      count,
+
     });
-  
+
   } catch (error) {
     console.error("Error fetching available cars:", error);
     res.status(500).send({ message: "Internal server error" });
@@ -287,10 +288,46 @@ export const getCarType = async (req, res) => {
   try {
     const carTypes = await CarModel.distinct("carModel");
     const location = await CarModel.distinct("location");
-    
+
     res.send({ carTypes, location })
   } catch (error) {
     res.status(404).json({ message: "Data not found" });
   }
 };
 
+
+//user
+
+export const createUser = async (req, res) => {
+  try {
+    const user = req.body;
+    console.log(user);
+
+    const existUser = await UserModel.find({ userEmail: user.userEmail });
+
+    if (existUser.length > 0) {
+      return res.status(409).send({ message: "User already exists" });
+    }
+
+    const result = await UserModel.create(user);
+    console.log(result);
+
+    res.send(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "User not created" });
+  }
+};
+
+export const getUser = async (req, res) => {
+  try {
+    const email = req.query.email;
+
+    const result = await UserModel.findOne({userEmail:email});
+    console.log(result)
+    res.send(result);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "user not found " });
+  }
+};
