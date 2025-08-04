@@ -53,52 +53,75 @@ export const getCars = async (req, res) => {
 };
 
 export const availableCars = async (req, res) => {
-  const { search, sort, limit = 6, page = 0, carModel, location } = req.query;
+  try {
+    const {
+      search,
+      sort,
+      limit = 6,
+      page = 1,
+      carModels,
+      locations
+    } = req.query;
+    console.log(locations,carModels)
+    const parsedLimit = parseInt(limit);
+    const parsedPage = parseInt(page);
+    const skip = (parsedPage - 1) * parsedLimit;
 
-  const parsedLimit = parseInt(limit);
-  const parsedPage = parseInt(page);
+    // 🔍 Build MongoDB query
+    const query = { };
 
-  const query = {
-    availability: "Available",
-  };
+    if (carModels) {
+      query.carModel = carModels;
+    }
 
-  if (carModel) {
-    query.carModel = carModel;
+    if (locations) {
+      query["location.city"] = locations;
+    }
+
+    if (search) {
+      query.$or = [
+        { carModel: { $regex: search, $options: "i" } },
+        { brand: { $regex: search, $options: "i" } },
+        { "location.city": { $regex: search, $options: "i" } },
+        // { "location.pickupPoints": { $regex: search, $options: "i" } },
+        // { category: { $regex: search, $options: "i" } },
+        // { fuelType: { $regex: search, $options: "i" } }
+      ];
+    }
+
+    // ⬇️ Prepare base query
+    let carQuery = CarModel.find(query)
+      .lean()
+      .skip(skip)
+      .limit(parsedLimit);
+
+    // 🔀 Sorting
+    if (sort === "asc") {
+      carQuery = carQuery.sort({ dailyRentalPrice: 1 });
+    } else if (sort === "desc") {
+      carQuery = carQuery.sort({ dailyRentalPrice: -1 });
+    }
+
+    // 🚀 Fetch cars and total count in parallel
+    const [cars, total] = await Promise.all([
+      carQuery.exec(),
+      CarModel.countDocuments(query)
+    ]);
+
+    // 📤 Response
+    res.send({
+      cars,
+      total,
+      
+    });
+  
+  } catch (error) {
+    console.error("Error fetching available cars:", error);
+    res.status(500).send({ message: "Internal server error" });
   }
-
-
-  if (location) {
-    query.location = location;
-  }
-
-  if (search) {
-    query.$or = [
-      { carModel: { $regex: search, $options: "i" } },
-      { brand: { $regex: search, $options: "i" } },
-      { location: { $regex: search, $options: "i" } },
-    ];
-  }
-
-  const skip = (parsedPage - 1) * parsedLimit;
-
-  let result = CarModel.find(query).lean().skip(skip).limit(parsedLimit);
-
-  if (sort === "asc") {
-    result = result.sort({ dailyRentalPrice: 1 });
-  } else if (sort === "desc") {
-    result = result.sort({ dailyRentalPrice: -1 });
-  }
-
-  const [cars, count] = await Promise.all([
-    result,
-    CarModel.countDocuments(query)
-  ]);
-
-  res.send({
-    cars,
-    count
-  });
 };
+
+
 
 
 export const myCars = async (req, res) => {
