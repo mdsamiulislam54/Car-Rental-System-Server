@@ -4,7 +4,10 @@ import cors from "cors";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import {
+  allUser,
   availableCars,
+  bookingCencel,
+  bookingConfirm,
   cancelBooking,
   car,
   carBooking,
@@ -18,6 +21,8 @@ import {
   // jwtTokenGenerate,
   myCars,
   totalCar,
+  totalCarBooking,
+  totalCarBookingPending,
   totalUser,
   updateCar,
   updateDate,
@@ -51,12 +56,12 @@ mongoose
 app.post("/car",verifyFirebaseToken, car);
 app.post("/booking-car", carBooking);
 //user
-app.post('/user', createUser)
+app.post('/user-create', createUser)
 // app.post("/jwt", jwtTokenGenerate);
 
 app.get("/car", getCars);
 app.get("/available-cars", availableCars);
-app.get("/my-cars", verifyFirebaseToken, myCars);
+app.get("/my-cars", myCars);
 app.get("/car-details/:id", carDetails);
 app.get("/booking-car", verifyFirebaseToken, getBooking);
 app.get('/car-type',getCarType)
@@ -64,11 +69,17 @@ app.get('/car-type',getCarType)
 app.get('/user', getUser)
 //admin
 app.get('/admin/total/car', totalCar)
-app.get('/admin/total/user', totalUser)
+app.get('/admin/total/user', totalUser);
+app.get('/dashboard/total/booking/car', totalCarBooking)
+app.get('/dashboard/total/booking/car/pending', totalCarBookingPending);
+app.get('/admin/user', allUser)
 
 
 app.patch("/update-car/:id", updateCar);
 app.patch("/update-booking/:id", updateDate);
+//admin
+app.patch('/admin/booking/confirm/:id', bookingConfirm);
+app.patch('/admin/booking/cencel/:id', bookingCencel);
 
 app.delete("/cancel-booking/:id", cancelBooking);
 app.delete("/my-cars/:id", deleteCar);

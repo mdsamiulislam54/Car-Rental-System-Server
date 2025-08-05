@@ -29,13 +29,25 @@ const bookingSchema = new mongoose.Schema({
     type: String,
     default: "Pending"
   },
-  carImages:{
-    type:String,
-    required:true
+  carImages: {
+    type: String,
+    required: true
   },
-  carId:{
-    type:String,
-    required:true
+  carId: {
+    type: String,
+    required: true
+  },
+  paymentStatus: {
+    type: String,
+    required: true
+  },
+  userEmail: {
+    type: String,
+    required: true
+  },
+  userName: {
+    type: String,
+    required: true
   },
   createdAt: {
     type: Date,

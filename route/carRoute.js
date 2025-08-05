@@ -126,23 +126,35 @@ export const availableCars = async (req, res) => {
 
 
 export const myCars = async (req, res) => {
-  const uid = req.query.uid;
-  const email = req.query.email;
-  console.log(uid, email)
-  if (email !== req.email) {
-    return res.status(403).send({ message: "Forbidden access" });
+
+  try {
+    const { email, limit = 6, page = 1, } = req.query;
+    const parsedLimit = parseInt(limit);
+    const parsedPage = parseInt(page);
+    const skip = (parsedPage - 1) * parsedLimit;
+
+
+    const sort = req.query.sort;
+
+    let result = CarModel.find().skip(skip).limit(parsedLimit).lean();
+    if (sort === "asc") {
+      result = result.sort({ createdAt: -1 });
+    } else if (sort === "desc") {
+      result = result.sort({ createdAt: 1 });
+    }
+    const cars = await result;
+    const totalCars = await CarModel.countDocuments();
+
+    res.send({
+      cars,
+      totalCars,
+    });
+  } catch (error) {
+
+    console.error("Error fetching my cars:", error);
+    res.status(500).send({ message: "Internal server error" });
   }
 
-  const sort = req.query.sort;
-
-  let result = CarModel.find({ ownerId: uid });
-  if (sort === "asc") {
-    result = result.sort({ createdAt: -1 });
-  } else if (sort === "desc") {
-    result = result.sort({ createdAt: 1 });
-  }
-  const cars = await result;
-  res.send(cars);
 };
 
 export const deleteCar = async (req, res) => {
@@ -301,18 +313,18 @@ export const getCarType = async (req, res) => {
 export const createUser = async (req, res) => {
   try {
     const user = req.body;
-    console.log(user);
+
 
     const existUser = await UserModel.find({ userEmail: user.userEmail });
 
     if (existUser.length > 0) {
-      return res.status(409).send({ message: "User already exists" });
+      return res.status(200).send({ message: "User already exists" }, existUser);
     }
 
     const result = await UserModel.create(user);
-    console.log(result);
 
-    res.send(result);
+    console.log(result, existUser);
+    res.status(201).send({ message: "User created successfully", result });
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "User not created" });
@@ -323,7 +335,7 @@ export const getUser = async (req, res) => {
   try {
     const email = req.query.email;
 
-    const result = await UserModel.findOne({userEmail:email});
+    const result = await UserModel.findOne({ userEmail: email });
     console.log(result)
     res.send(result);
   } catch (error) {
@@ -335,30 +347,98 @@ export const getUser = async (req, res) => {
 
 //admin 
 
-export const totalCar = async(req,res)=>{
+export const totalCar = async (req, res) => {
   try {
     const totalCar = await CarModel.find().lean();
+    const totalPaid = await BookingModel.find({ paymentStatus: "paid" });
+    const paid = totalPaid.reduce((acc, item) => acc + item.totalPrice, 0);
+    console.log(paid)
     const total = totalCar.length;
-    res.send(total)
+    res.send({ total, paid })
   } catch (error) {
-    res.status(500).json({message:'car not foun'})
+    res.status(500).json({ message: 'car not foun' })
   }
 }
-export const totalUser = async(req,res)=>{
+export const totalUser = async (req, res) => {
   try {
     const totalUser = await UserModel.find().lean();
     const total = totalUser.length;
     res.send(total)
   } catch (error) {
-    res.status(500).json({message:'car not foun'})
+    res.status(500).json({ message: 'car not foun' })
   }
 }
-export const totalCarBooking = async(req,res)=>{
+export const totalCarBooking = async (req, res) => {
   try {
-    const totalUser = await UserModel.find().lean();
-    const total = totalUser.length;
-    res.send(total)
+    const totalBookingCar = await BookingModel.find().lean();
+
+    res.send(totalBookingCar);
   } catch (error) {
-    res.status(500).json({message:'car not foun'})
+    res.status(500).json({ message: 'car not foun' })
+  }
+}
+export const totalCarBookingPending = async (req, res) => {
+  try {
+    const totalBookingCar = await BookingModel.find({ bookingStatus: "pending" }).lean().sort({ createdAt: -1 })
+
+    res.send(totalBookingCar);
+  } catch (error) {
+    res.status(500).json({ message: 'car not foun' })
+  }
+}
+
+export const bookingConfirm = async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(id)
+    const updatedBooking = await BookingModel.findByIdAndUpdate(
+      id,
+      { bookingStatus: 'confirmed' },
+      { new: true }
+    );
+    console.log(updatedBooking)
+
+    if (!updatedBooking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    res.status(200).json({ message: 'Booking confirmed successfully', updatedBooking });
+  } catch (error) {
+    res.status(500).json({ message: 'Internal server error', error });
+  }
+}
+
+export const allUser = async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 6;
+    const page = parseInt(req.query.page) || 1;
+    const skip = (page - 1) * limit
+    const user = await UserModel.find().skip(skip).limit(limit).lean();
+    console.log(user)
+    const count = await UserModel.countDocuments();
+    res.send({user,count})
+  } catch (error) {
+    res.status(400).json({ message: "user not found" })
+  }
+}
+
+// Cancel Booking
+export const bookingCencel = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const updatedBooking = await BookingModel.findByIdAndUpdate(
+      id,
+      { bookingStatus: 'canceled' },
+      { new: true }
+    );
+
+    if (!updatedBooking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    res.status(200).json({ message: 'Booking canceled successfully', updatedBooking });
+  } catch (error) {
+    res.status(500).json({ message: 'Internal server error', error });
   }
 }
