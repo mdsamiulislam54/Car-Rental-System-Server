@@ -331,3 +331,34 @@ export const getUser = async (req, res) => {
     res.status(500).send({ message: "user not found " });
   }
 };
+
+
+//admin 
+
+export const totalCar = async(req,res)=>{
+  try {
+    const totalCar = await CarModel.find().lean();
+    const total = totalCar.length;
+    res.send(total)
+  } catch (error) {
+    res.status(500).json({message:'car not foun'})
+  }
+}
+export const totalUser = async(req,res)=>{
+  try {
+    const totalUser = await UserModel.find().lean();
+    const total = totalUser.length;
+    res.send(total)
+  } catch (error) {
+    res.status(500).json({message:'car not foun'})
+  }
+}
+export const totalCarBooking = async(req,res)=>{
+  try {
+    const totalUser = await UserModel.find().lean();
+    const total = totalUser.length;
+    res.send(total)
+  } catch (error) {
+    res.status(500).json({message:'car not foun'})
+  }
+}

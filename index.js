@@ -17,6 +17,8 @@ import {
   getUser,
   // jwtTokenGenerate,
   myCars,
+  totalCar,
+  totalUser,
   updateCar,
   updateDate,
   verifyFirebaseToken,
@@ -60,6 +62,10 @@ app.get("/booking-car", verifyFirebaseToken, getBooking);
 app.get('/car-type',getCarType)
 //user
 app.get('/user', getUser)
+//admin
+app.get('/admin/total/car', totalCar)
+app.get('/admin/total/user', totalUser)
+
 
 app.patch("/update-car/:id", updateCar);
 app.patch("/update-booking/:id", updateDate);
