@@ -312,10 +312,11 @@ export const getCarType = async (req, res) => {
 
 export const createUser = async (req, res) => {
   try {
+
     const user = req.body;
 
 
-    const existUser = await UserModel.find({ userEmail: user.userEmail });
+    const existUser = await UserModel.find({ userEmail: user.email });
 
     if (existUser.length > 0) {
       return res.status(200).send({ message: "User already exists" }, existUser);
@@ -323,7 +324,7 @@ export const createUser = async (req, res) => {
 
     const result = await UserModel.create(user);
 
-    console.log(result, existUser);
+
     res.status(201).send({ message: "User created successfully", result });
   } catch (error) {
     console.error(error);
@@ -352,7 +353,7 @@ export const totalCar = async (req, res) => {
     const totalCar = await CarModel.find().lean();
     const totalPaid = await BookingModel.find({ paymentStatus: "paid" });
     const paid = totalPaid.reduce((acc, item) => acc + item.totalPrice, 0);
-  
+
     const total = totalCar.length;
     res.send({ total, paid, totalPaid })
   } catch (error) {
@@ -370,11 +371,11 @@ export const totalUser = async (req, res) => {
 }
 export const totalCarBooking = async (req, res) => {
   try {
-   
-    const totalBookingCar = await BookingModel.find().lean().sort({createdAt:-1})
-    const count = await BookingModel.countDocuments();
 
-    res.send({totalBookingCar,count});
+    const totalBookingCar = await BookingModel.find().lean().sort({ createdAt: -1 })
+
+
+    res.send(totalBookingCar);
   } catch (error) {
     res.status(500).json({ message: 'car not foun' })
   }
@@ -398,7 +399,7 @@ export const bookingConfirm = async (req, res) => {
       { bookingStatus: 'confirmed' },
       { new: true }
     );
-   
+
 
     if (!updatedBooking) {
       return res.status(404).json({ message: 'Booking not found' });
@@ -418,7 +419,7 @@ export const allUser = async (req, res) => {
     const user = await UserModel.find().skip(skip).limit(limit).lean();
     console.log(user)
     const count = await UserModel.countDocuments();
-    res.send({user,count})
+    res.send({ user, count })
   } catch (error) {
     res.status(400).json({ message: "user not found" })
   }
@@ -456,7 +457,7 @@ export const recentlyBookingCar = async (req, res) => {
 
     const count = await BookingModel.countDocuments();
     const bookings = await BookingModel.find()
-      .sort({ createdAt: -1 }) 
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(parsedLimit)
       .lean();
