@@ -20,6 +20,7 @@ import {
   getUser,
   // jwtTokenGenerate,
   myCars,
+  recentlyBookingCar,
   totalCar,
   totalCarBooking,
   totalCarBookingPending,
@@ -73,6 +74,7 @@ app.get('/admin/total/user', totalUser);
 app.get('/dashboard/total/booking/car', totalCarBooking)
 app.get('/dashboard/total/booking/car/pending', totalCarBookingPending);
 app.get('/admin/user', allUser)
+app.get('/admin/recently/added/car', recentlyBookingCar)
 
 
 app.patch("/update-car/:id", updateCar);

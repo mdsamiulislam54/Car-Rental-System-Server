@@ -49,6 +49,10 @@ const bookingSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  totalHour:{
+    type:Number,
+    default:0
+  },
   createdAt: {
     type: Date,
     default: Date.now

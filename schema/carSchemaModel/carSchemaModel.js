@@ -20,7 +20,7 @@ const carSchema = new mongoose.Schema(
     },
     availability: {
       type: String,
-      default: "Available",
+      default: "available",
     },
     registrationNumber: {
       type: String,
@@ -77,6 +77,22 @@ const carSchema = new mongoose.Schema(
       type: String, 
       required: false,
     },
+    whyChoose:{
+      type:[String],
+      default:[]
+    },
+    fuelTankCapacity:{
+      type:String,
+      require:true
+    },
+    driveType:{
+      type:String,
+      require:true
+    },
+    bootSpace:{
+      type:String,
+      require:true
+    }
   },
   {
     timestamps: true,

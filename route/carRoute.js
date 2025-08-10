@@ -352,9 +352,9 @@ export const totalCar = async (req, res) => {
     const totalCar = await CarModel.find().lean();
     const totalPaid = await BookingModel.find({ paymentStatus: "paid" });
     const paid = totalPaid.reduce((acc, item) => acc + item.totalPrice, 0);
-    console.log(paid)
+  
     const total = totalCar.length;
-    res.send({ total, paid })
+    res.send({ total, paid, totalPaid })
   } catch (error) {
     res.status(500).json({ message: 'car not foun' })
   }
@@ -370,9 +370,11 @@ export const totalUser = async (req, res) => {
 }
 export const totalCarBooking = async (req, res) => {
   try {
-    const totalBookingCar = await BookingModel.find().lean();
+   
+    const totalBookingCar = await BookingModel.find().lean().sort({createdAt:-1})
+    const count = await BookingModel.countDocuments();
 
-    res.send(totalBookingCar);
+    res.send({totalBookingCar,count});
   } catch (error) {
     res.status(500).json({ message: 'car not foun' })
   }
@@ -396,7 +398,7 @@ export const bookingConfirm = async (req, res) => {
       { bookingStatus: 'confirmed' },
       { new: true }
     );
-    console.log(updatedBooking)
+   
 
     if (!updatedBooking) {
       return res.status(404).json({ message: 'Booking not found' });
@@ -442,3 +444,26 @@ export const bookingCencel = async (req, res) => {
     res.status(500).json({ message: 'Internal server error', error });
   }
 }
+
+
+
+export const recentlyBookingCar = async (req, res) => {
+  try {
+    const { email, limit = 6, page = 1 } = req.query;
+    const parsedLimit = parseInt(limit);
+    const parsedPage = parseInt(page);
+    const skip = (parsedPage - 1) * parsedLimit;
+
+    const count = await BookingModel.countDocuments();
+    const bookings = await BookingModel.find()
+      .sort({ createdAt: -1 }) 
+      .skip(skip)
+      .limit(parsedLimit)
+      .lean();
+
+    res.status(200).json({ total: count, bookings });
+  } catch (error) {
+    console.error("Error fetching recent bookings:", error);
+    res.status(500).json({ message: "Server Error" });
+  }
+};
