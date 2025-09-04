@@ -5,6 +5,7 @@ dotenv.config();
 
 import admin from "firebase-admin";
 import { UserModel } from "../schema/userModel/userModel.js";
+import { UserRecord } from "firebase-admin/auth";
 
 admin.initializeApp({
   credential: admin.credential.cert({
@@ -128,19 +129,17 @@ export const availableCars = async (req, res) => {
 export const myCars = async (req, res) => {
 
   try {
-    const { email, limit = 6, page = 1, } = req.query;
+    const { email, limit = 6, page = 1,sort } = req.query;
     const parsedLimit = parseInt(limit);
     const parsedPage = parseInt(page);
     const skip = (parsedPage - 1) * parsedLimit;
 
 
-    const sort = req.query.sort;
-
     let result = CarModel.find().skip(skip).limit(parsedLimit).lean();
     if (sort === "asc") {
-      result = result.sort({ createdAt: -1 });
-    } else if (sort === "desc") {
       result = result.sort({ createdAt: 1 });
+    } else if (sort === "desc") {
+      result = result.sort({ createdAt: -1 });
     }
     const cars = await result;
     const totalCars = await CarModel.countDocuments();
@@ -193,16 +192,19 @@ export const carBooking = async (req, res) => {
   res.send(result);
 };
 export const getBooking = async (req, res) => {
-  const uid = req.query.uid;
-  const email = req.query.email;
+  const {limit = 6, page = 1,uid,email} = req.query;
+   const parsedLimit = parseInt(limit);
+    const parsedPage = parseInt(page);
+  const skip  = (parsedPage -1) * parsedLimit
   if (email !== req.email) {
     return res.status(403).send({ message: "Forbidden access" });
   }
 
   const query = { userUid: uid };
-
-  const result = await BookingModel.find(query).lean();
-  res.send(result);
+  const count = await BookingModel.countDocuments(query)
+  const result = await BookingModel.find(query).limit(limit).skip(skip).lean()
+  console.log(count, result)
+  res.send({count, result});
 };
 
 export const cancelBooking = async (req, res) => {
@@ -337,7 +339,7 @@ export const getUser = async (req, res) => {
     const email = req.query.email;
 
     const result = await UserModel.findOne({ userEmail: email });
-    console.log(result)
+   
     res.send(result);
   } catch (error) {
     console.error(error);
@@ -345,6 +347,21 @@ export const getUser = async (req, res) => {
   }
 };
 
+export const userBookingCar = async(req,res)=>{
+  try {
+    const userId = req.query.userId;
+    const userData = await BookingModel.find({userUid:userId}).lean()
+    console.log(userData)
+    res.send(userData)
+
+  } catch (error) {
+    res.status(500).send({message:"user booking data is not found", error})
+  }
+}
+
+
+
+// user end
 
 //admin 
 
@@ -355,7 +372,7 @@ export const totalCar = async (req, res) => {
     const paid = totalPaid.reduce((acc, item) => acc + item.totalPrice, 0);
 
     const total = totalCar.length;
-    res.send({ total, paid, totalPaid })
+    res.send({ total, paid, totalPaid, totalCar })
   } catch (error) {
     res.status(500).json({ message: 'car not foun' })
   }
@@ -417,13 +434,29 @@ export const allUser = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const skip = (page - 1) * limit
     const user = await UserModel.find().skip(skip).limit(limit).lean();
-    console.log(user)
+   
     const count = await UserModel.countDocuments();
     res.send({ user, count })
   } catch (error) {
     res.status(400).json({ message: "user not found" })
   }
 }
+
+export const blockUser = async(req,res) =>{
+  try {
+    
+    const id = req.query.id;
+    console.log(id)
+    const user = await UserModel.deleteOne({_id: id});
+    console.log(user)
+    res.status(200).send({message:"The User has been Blocked Successful!" , user})
+
+  } catch (error) {
+    res.status(404).send({message:"user not found", error})
+  }
+}
+
+// admin end
 
 // Cancel Booking
 export const bookingCencel = async (req, res) => {

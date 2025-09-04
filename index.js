@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import {
   allUser,
   availableCars,
+  blockUser,
   bookingCencel,
   bookingConfirm,
   cancelBooking,
@@ -27,6 +28,7 @@ import {
   totalUser,
   updateCar,
   updateDate,
+  userBookingCar,
   verifyFirebaseToken,
 } from "./route/carRoute.js";
 import errorHandler from "./errorHandling/errohandling.js";
@@ -68,6 +70,8 @@ app.get("/booking-car", verifyFirebaseToken, getBooking);
 app.get('/car-type',getCarType)
 //user
 app.get('/user', getUser)
+app.get('/dashboard/user/booking/car', userBookingCar)
+
 //admin
 app.get('/admin/total/car', totalCar)
 app.get('/admin/total/user', totalUser);
@@ -85,6 +89,7 @@ app.patch('/admin/booking/cencel/:id', bookingCencel);
 
 app.delete("/cancel-booking/:id", cancelBooking);
 app.delete("/my-cars/:id", deleteCar);
+app.delete('/admin/user/block', blockUser)
 
 // Run server
 app.listen(port, () => {
