@@ -62,14 +62,16 @@ export const availableCars = async (req, res) => {
       limit = 6,
       page = 1,
       carModels,
-      locations
+      locations,
+      minPrice,
+      maxPrice
     } = req.query;
-    console.log(locations, carModels)
+
     const parsedLimit = parseInt(limit);
     const parsedPage = parseInt(page);
     const skip = (parsedPage - 1) * parsedLimit;
 
-    // 🔍 Build MongoDB query
+
     const query = {};
 
     if (carModels) {
@@ -85,13 +87,16 @@ export const availableCars = async (req, res) => {
         { carModel: { $regex: search, $options: "i" } },
         { brand: { $regex: search, $options: "i" } },
         { "location.city": { $regex: search, $options: "i" } },
-        // { "location.pickupPoints": { $regex: search, $options: "i" } },
-        // { category: { $regex: search, $options: "i" } },
-        // { fuelType: { $regex: search, $options: "i" } }
       ];
     }
+    const min = minPrice ? Number(minPrice) : 1;
+    const max = maxPrice ? Number(maxPrice) : Number.MAX_SAFE_INTEGER;
 
-    // ⬇️ Prepare base query
+    query.dailyRentalPrice = { $gte: min, $lte: max };
+
+
+
+
     let carQuery = CarModel.find(query)
       .lean()
       .skip(skip)
@@ -129,7 +134,7 @@ export const availableCars = async (req, res) => {
 export const myCars = async (req, res) => {
 
   try {
-    const { email, limit = 6, page = 1,sort } = req.query;
+    const { email, limit = 6, page = 1, sort } = req.query;
     const parsedLimit = parseInt(limit);
     const parsedPage = parseInt(page);
     const skip = (parsedPage - 1) * parsedLimit;
@@ -192,10 +197,10 @@ export const carBooking = async (req, res) => {
   res.send(result);
 };
 export const getBooking = async (req, res) => {
-  const {limit = 6, page = 1,uid,email} = req.query;
-   const parsedLimit = parseInt(limit);
-    const parsedPage = parseInt(page);
-  const skip  = (parsedPage -1) * parsedLimit
+  const { limit = 6, page = 1, uid, email } = req.query;
+  const parsedLimit = parseInt(limit);
+  const parsedPage = parseInt(page);
+  const skip = (parsedPage - 1) * parsedLimit
   if (email !== req.email) {
     return res.status(403).send({ message: "Forbidden access" });
   }
@@ -203,8 +208,8 @@ export const getBooking = async (req, res) => {
   const query = { userUid: uid };
   const count = await BookingModel.countDocuments(query)
   const result = await BookingModel.find(query).limit(limit).skip(skip).lean()
-  console.log(count, result)
-  res.send({count, result});
+
+  res.send({ count, result });
 };
 
 export const cancelBooking = async (req, res) => {
@@ -339,7 +344,7 @@ export const getUser = async (req, res) => {
     const email = req.query.email;
 
     const result = await UserModel.findOne({ userEmail: email });
-   
+
     res.send(result);
   } catch (error) {
     console.error(error);
@@ -347,15 +352,15 @@ export const getUser = async (req, res) => {
   }
 };
 
-export const userBookingCar = async(req,res)=>{
+export const userBookingCar = async (req, res) => {
   try {
     const userId = req.query.userId;
-    const userData = await BookingModel.find({userUid:userId}).lean()
-    console.log(userData)
+    const userData = await BookingModel.find({ userUid: userId }).lean()
+
     res.send(userData)
 
   } catch (error) {
-    res.status(500).send({message:"user booking data is not found", error})
+    res.status(500).send({ message: "user booking data is not found", error })
   }
 }
 
@@ -434,7 +439,7 @@ export const allUser = async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const skip = (page - 1) * limit
     const user = await UserModel.find().skip(skip).limit(limit).lean();
-   
+
     const count = await UserModel.countDocuments();
     res.send({ user, count })
   } catch (error) {
@@ -442,17 +447,17 @@ export const allUser = async (req, res) => {
   }
 }
 
-export const blockUser = async(req,res) =>{
+export const blockUser = async (req, res) => {
   try {
-    
+
     const id = req.query.id;
     console.log(id)
-    const user = await UserModel.deleteOne({_id: id});
+    const user = await UserModel.deleteOne({ _id: id });
     console.log(user)
-    res.status(200).send({message:"The User has been Blocked Successful!" , user})
+    res.status(200).send({ message: "The User has been Blocked Successful!", user })
 
   } catch (error) {
-    res.status(404).send({message:"user not found", error})
+    res.status(404).send({ message: "user not found", error })
   }
 }
 
