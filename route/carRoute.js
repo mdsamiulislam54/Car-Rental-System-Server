@@ -142,7 +142,7 @@ export const myCars = async (req, res) => {
     const skip = (parsedPage - 1) * parsedLimit;
 
 
-    let result = CarModel.find().skip(skip).limit(parsedLimit).lean().sort({createdAt:-1})
+    let result = CarModel.find().skip(skip).limit(parsedLimit).lean().sort({ createdAt: -1 })
     if (sort === "asc") {
       result = result.sort({ createdAt: 1 });
     } else if (sort === "desc") {
@@ -560,17 +560,27 @@ export const postBlogs = async (req, res) => {
 //GET ALL BLOGS
 export const getBlogs = async (req, res) => {
   try {
-    const { limit = 3, page = 1,category } = req.query;
+    const { limit = 3, page = 1, category, search } = req.query;
 
     const query = {};
 
-    if(category){
-      query.categories = {$in:[category]}
+    if (category) {
+      query.categories = { $in: [category] }
     }
 
-    const parsedLimit = Math.max(1, parseInt(limit)); 
-    const parsedPage = Math.max(1, parseInt(page));  
-    const skip = (parsedPage -1)  * parsedLimit;
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: 'i' } },
+        { slug: { $regex: search, $options: 'i' } },
+        { excerpt: { $regex: search, $options: 'i' } },
+
+
+      ]
+    }
+
+    const parsedLimit = Math.max(1, parseInt(limit));
+    const parsedPage = Math.max(1, parseInt(page));
+    const skip = (parsedPage - 1) * parsedLimit;
 
 
     const [count, blogs] = await Promise.all([
@@ -578,14 +588,14 @@ export const getBlogs = async (req, res) => {
       BlogModal.find(query)
         .skip(skip)
         .limit(parsedLimit)
-        .sort({publishedAt:-1})
+        .sort({ createdAt: -1 })
         .lean(),
     ]);
 
     res.status(200).send({
       blogs,
       count,
-     
+
     });
 
   } catch (error) {
@@ -596,3 +606,63 @@ export const getBlogs = async (req, res) => {
     });
   }
 };
+
+export const getBlogsById = async (req, res) => {
+  try {
+    const blogId = req.params.id;
+    const blogs = await BlogModal.findOne({ _id: blogId });
+    res.send(blogs)
+  } catch (error) {
+    res.status(400).send({ message: "Blogs post Not found" })
+  }
+}
+
+
+export const manageAllBlogs = async (req, res) => {
+  try {
+    const { limit = 10, page = 1 } = req.query;
+    const parsedLimit = Math.max(1, parseInt(limit));
+    const parsedPage = Math.max(1, parseInt(page));
+    const skip = (parsedPage - 1) * parsedLimit;
+
+
+    const [count, blogs] = await Promise.all([
+      BlogModal.countDocuments(),
+      BlogModal.find()
+        .skip(skip)
+        .limit(parsedLimit)
+        .sort({ createdAt: -1 })
+        .lean(),
+    ]);
+
+    res.status(200).send({
+      blogs,
+      count,
+
+    });
+
+  } catch (error) {
+    console.error("Error fetching blogs:", error);
+    res.status(500).send({
+      message: "Blogs data could not be fetched",
+      error: error.message,
+    });
+  }
+};
+
+
+export const deleteBlogsById = async (req,res)=>{
+  try {
+    const blogsId = req.params.id;
+    const blogs = await BlogModal.deleteOne({_id:blogsId});
+    res.status(200).send({message:"Blogs Data Deleted Successfully!", blogs})
+    
+  } catch (error) {
+    console.error("Error fetching blogs:", error);
+    res.status(500).send({
+      message: "Blogs data could not be Delete",
+      error: error.message,
+    });
+  
+  }
+} 
