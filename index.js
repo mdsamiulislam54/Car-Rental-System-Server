@@ -15,12 +15,14 @@ import {
   carDetails,
   createUser,
   deleteCar,
+  getBlogs,
   getBooking,
   getCars,
   getCarType,
   getUser,
   // jwtTokenGenerate,
   myCars,
+  postBlogs,
   recentlyBookingCar,
   totalCar,
   totalCarBooking,
@@ -62,12 +64,16 @@ app.post("/booking-car", carBooking);
 app.post('/user-create', createUser)
 // app.post("/jwt", jwtTokenGenerate);
 
+//admin 
+app.post('/admin/blog/post', postBlogs)
+
 app.get("/car", getCars);
 app.get("/available-cars", availableCars);
 app.get("/my-cars", myCars);
 app.get("/car-details/:id", carDetails);
 app.get("/booking-car", verifyFirebaseToken, getBooking);
 app.get('/car-type',getCarType)
+app.get('/blogs', getBlogs)
 //user
 app.get('/user', getUser)
 app.get('/dashboard/user/booking/car', userBookingCar)
@@ -79,6 +85,8 @@ app.get('/dashboard/total/booking/car', totalCarBooking)
 app.get('/dashboard/total/booking/car/pending', totalCarBookingPending);
 app.get('/admin/user', allUser)
 app.get('/admin/recently/added/car', recentlyBookingCar)
+
+
 
 
 app.patch("/update-car/:id", updateCar);

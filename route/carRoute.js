@@ -1,11 +1,13 @@
 import BookingModel from "../schema/carSchemaModel/BookingModel.js";
 import { CarModel } from "../schema/carSchemaModel/carSchemaModel.js";
 import dotenv from "dotenv";
+import nodemailer from 'nodemailer'
 dotenv.config();
 
 import admin from "firebase-admin";
 import { UserModel } from "../schema/userModel/userModel.js";
 import { UserRecord } from "firebase-admin/auth";
+import BlogModal from "../schema/blogsSchemaModel/blogsModel.js";
 
 admin.initializeApp({
   credential: admin.credential.cert({
@@ -140,7 +142,7 @@ export const myCars = async (req, res) => {
     const skip = (parsedPage - 1) * parsedLimit;
 
 
-    let result = CarModel.find().skip(skip).limit(parsedLimit).lean();
+    let result = CarModel.find().skip(skip).limit(parsedLimit).lean().sort({createdAt:-1})
     if (sort === "asc") {
       result = result.sort({ createdAt: 1 });
     } else if (sort === "desc") {
@@ -186,6 +188,7 @@ export const carDetails = async (req, res) => {
 
 export const carBooking = async (req, res) => {
   const bookingData = req.body;
+
   const { carId } = bookingData;
   const query = { _id: carId };
   const updatedDoc = {
@@ -193,6 +196,40 @@ export const carBooking = async (req, res) => {
   };
 
   const result = await BookingModel.insertOne(bookingData);
+  const transporter = nodemailer.createTransport({
+    host: "smtp.gmail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: 'samiulm5332@gmail.com',
+      pass: process.env.APP_PASSWORD
+    }
+  })
+  const { userEmail, userName, carModel, startDay, endDate, totalPrice, totalHour, bookingStatus, carImages } = bookingData;
+  const htmlContent = `
+    <h2>Booking Confirmation</h2>
+    <p>Hi ${userName},</p>
+    <p>Your booking for <strong>${carModel}</strong> is confirmed.</p>
+    <img src="${carImages}" alt="${carModel}" style="width:300px; height:auto; border-radius:8px; margin-bottom:10px;" />
+    <ul>
+      <li>Start Date: ${startDay}</li>
+      <li>End Date: ${endDate}</li>
+      <li>Total Hours: ${totalHour}</li>
+      <li>Total Price: ৳${totalPrice}</li>
+      <li>Status: ${bookingStatus}</li>
+    </ul>
+    <p>Thank you for booking with us!</p>
+  `;
+
+  await transporter.sendMail({
+    from: 'Rent Ride',
+    to: userEmail,
+    subject: `Booking Confirmation - ${carModel}`,
+    html: htmlContent,
+
+
+  })
+
   await CarModel.updateOne(query, updatedDoc);
   res.send(result);
 };
@@ -504,5 +541,58 @@ export const recentlyBookingCar = async (req, res) => {
   } catch (error) {
     console.error("Error fetching recent bookings:", error);
     res.status(500).json({ message: "Server Error" });
+  }
+};
+
+
+//blogs
+
+export const postBlogs = async (req, res) => {
+  try {
+    const blogsData = req.body;
+    const result = await BlogModal.insertOne(blogsData);
+    res.send(result)
+  } catch (error) {
+    res.status(400).send({ message: "Blogs post filed" })
+  }
+}
+
+//GET ALL BLOGS
+export const getBlogs = async (req, res) => {
+  try {
+    const { limit = 3, page = 1,category } = req.query;
+
+    const query = {};
+
+    if(category){
+      query.categories = {$in:[category]}
+    }
+
+    const parsedLimit = Math.max(1, parseInt(limit)); 
+    const parsedPage = Math.max(1, parseInt(page));  
+    const skip = (parsedPage -1)  * parsedLimit;
+
+
+    const [count, blogs] = await Promise.all([
+      BlogModal.countDocuments(query),
+      BlogModal.find(query)
+        .skip(skip)
+        .limit(parsedLimit)
+        .sort({publishedAt:-1})
+        .lean(),
+    ]);
+
+    res.status(200).send({
+      blogs,
+      count,
+     
+    });
+
+  } catch (error) {
+    console.error("Error fetching blogs:", error);
+    res.status(500).send({
+      message: "Blogs data could not be fetched",
+      error: error.message,
+    });
   }
 };
