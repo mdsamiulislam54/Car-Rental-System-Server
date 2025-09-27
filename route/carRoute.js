@@ -47,7 +47,7 @@ export const getCars = async (req, res) => {
   try {
     const result = await CarModel.find()
       .lean()
-      .limit(6)
+      .limit(8)
       .sort({ createdAt: -1 });
 
     res.send(result);
@@ -61,27 +61,29 @@ export const availableCars = async (req, res) => {
     const {
       search,
       sort,
-      limit = 6,
+      limit = 16,
       page = 1,
-      carModels,
-      locations,
+      carModel,
+      location,
       minPrice,
       maxPrice
     } = req.query;
 
+
+
     const parsedLimit = parseInt(limit);
     const parsedPage = parseInt(page);
     const skip = (parsedPage - 1) * parsedLimit;
-
-
     const query = {};
 
-    if (carModels) {
-      query.carModel = carModels;
+    // Location filter
+    if (location) {
+      query["location.pickupPoints"] = { $regex: location, $options: "i" };
     }
 
-    if (locations) {
-      query["location.city"] = locations;
+    // Car Model filter
+    if (carModel) {
+      query.carModel = { $regex: carModel, $options: "i" };
     }
 
     if (search) {
@@ -89,15 +91,13 @@ export const availableCars = async (req, res) => {
         { carModel: { $regex: search, $options: "i" } },
         { brand: { $regex: search, $options: "i" } },
         { "location.city": { $regex: search, $options: "i" } },
+        { "location.pickupPoints": { $regex: search, $options: "i" } },
       ];
     }
     const min = minPrice ? Number(minPrice) : 1;
     const max = maxPrice ? Number(maxPrice) : Number.MAX_SAFE_INTEGER;
 
     query.dailyRentalPrice = { $gte: min, $lte: max };
-
-
-
 
     let carQuery = CarModel.find(query)
       .lean()
@@ -651,18 +651,18 @@ export const manageAllBlogs = async (req, res) => {
 };
 
 
-export const deleteBlogsById = async (req,res)=>{
+export const deleteBlogsById = async (req, res) => {
   try {
     const blogsId = req.params.id;
-    const blogs = await BlogModal.deleteOne({_id:blogsId});
-    res.status(200).send({message:"Blogs Data Deleted Successfully!", blogs})
-    
+    const blogs = await BlogModal.deleteOne({ _id: blogsId });
+    res.status(200).send({ message: "Blogs Data Deleted Successfully!", blogs })
+
   } catch (error) {
     console.error("Error fetching blogs:", error);
     res.status(500).send({
       message: "Blogs data could not be Delete",
       error: error.message,
     });
-  
+
   }
 } 
